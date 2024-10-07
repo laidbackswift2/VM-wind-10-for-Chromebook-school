@@ -1,0 +1,31 @@
+# Variables
+$VMName = "Windows10VM"
+$VMPath = "C:\VMs\$VMName"
+$ISOPath = "C:\path\to\Windows10.iso"  # Path to your Windows 10 ISO
+$VHDPath = "$VMPath\$VMName.vhdx"
+$Memory = 2GB
+$SwitchName = "Default Switch"  # Use the appropriate virtual switch
+
+# Create VM directory
+New-Item -ItemType Directory -Path $VMPath -Force
+
+# Create the virtual machine
+New-VM -Name $VMName -MemoryStartupBytes $Memory -BootDevice VHD -Generation 2 -Path $VMPath
+
+# Create a virtual hard disk
+New-VHD -Path $VHDPath -SizeBytes 60GB -Dynamic
+
+# Add the VHD to the VM
+Add-VMHardDiskDrive -VMName $VMName -Path $VHDPath
+
+# Add a DVD drive with the Windows 10 ISO
+Add-VMDvdDrive -VMName $VMName -Path $ISOPath
+
+# Configure the network adapter
+Add-VMNetworkAdapter -VMName $VMName -SwitchName $SwitchName
+
+# Start the VM
+Start-VM -Name $VMName
+
+# Output
+Write-Host "Virtual machine '$VMName' created and started successfully."
